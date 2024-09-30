@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polls</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            transform: translateZ(0);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        .logout-btn {
+            margin-top: 15px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 5px;
+            background-color: #d9534f;
+            transition: background-color 0.3s, transform 0.3s, border-color 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: inline-block;
+        }
+        .logout-btn:hover {
+            background-color: #c9302c;
+            transform: translateY(-2px);
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        .user-info {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .poll-item {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            perspective: 1000px;
+        }
+        .poll-item:hover {
+            transform: translateY(-8px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        form {
+            margin-top: 10px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        button, input[type="submit"] {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        button:hover, input[type="submit"]:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        ul {
+            padding: 0;
+            list-style-type: none;
+        }
+        .option {
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+    <script>
+        function validateVote() {
+            const options = document.querySelectorAll('input[name^="option_"]'); // Select all options
+            for (let option of options) {
+                if (option.checked) {
+                    return true; // At least one option is checked
+                }
+            }
+            alert('Please select an option before voting.');
+            return false; // Prevent form submission
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Polling Platform</h1>
+        <a class="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+    </header>
+
+    <main role="main">
+        <div class="user-info">
+            <p>Welcome, {{ current_user.username }}</p>
+        </div>
+
+        <h2>Available Polls</h2>
+
+        {% if unvoted_polls or voted_polls %}
+            {% if unvoted_polls %}
+                <h3>Unvoted Polls</h3>
+                {% for poll in unvoted_polls %}
+                    <div class="poll-item">
+                        <h4>{{ poll.question }}</h4>
+                        <form action="{{ url_for('vote', poll_id=poll.poll_id) }}" method="post" onsubmit="return validateVote();">
+                            {% for option in options[poll.poll_id] %}
+                                <div class="option">
+                                    <input type="radio" name="option_{{ poll.poll_id }}" value="{{ option }}" id="option_{{ poll.poll_id }}_{{ loop.index }}">
+                                    <label for="option_{{ poll.poll_id }}_{{ loop.index }}">{{ option }}</label>
+                                </div>
+                            {% endfor %}
+                            <input type="submit" value="Vote">
+                        </form>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if voted_polls %}
+                <h3>Voted Polls</h3>
+                {% for poll in voted_polls %}
+                    <div class="poll-item">
+                        <h4>{{ poll.question }}</h4>
+                        <p>You have already voted on this poll.</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <p>No polls available at the moment.</p>
+        {% endif %}
+    </main>
+
+    <footer style="background-color: rgba(255, 255, 255, 0.9); padding: 10px; text-align: center; box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);">
+        <p>&copy; 2024 Polling Platform. All rights reserved.</p>
+    </footer>
+</body>
+</html>
