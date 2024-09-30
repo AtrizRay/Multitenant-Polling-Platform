@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url('https://assets.timelinedaily.com/j/1203x902/2024/07/iit-jodhpur.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            margin: 100px auto;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        .login-container:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px);
+        }
+        .btn {
+            margin-top: 10px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            width: 100px; /* Adjust size as needed */
+        }
+        .alert {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+    <script>
+        function updateFormAction() {
+            const role = document.getElementById('role').value;
+            const form = document.getElementById('loginForm');
+            if (role === 'global_admin') {
+                form.action = "{{ url_for('admin_login') }}";
+            } else if (role === 'local_admin') {
+                form.action = "{{ url_for('local_admin_login') }}";
+            } else if (role === 'student') {
+                form.action = "{{ url_for('student_login') }}";
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="login-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/25/Logo_IITJ.png" alt="IIT Jodhpur Logo" class="logo">
+        <h2 class="text-center">IIT Poll Dynamics</h2>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="alert alert-danger text-center">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <form id="loginForm" method="POST" onsubmit="updateFormAction()">
+            <input type="hidden" name="tenant" value="{{ request.args.get('tenant') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Login as:</label>
+                <select class="form-control" id="role" name="role" required onchange="updateFormAction()">
+                    <option value="" disabled selected>Select your role</option>
+					<option value="student">Student</option>
+                    <option value="global_admin">Global Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+    </div>
+</body>
+</html>
