@@ -1,0 +1,4 @@
+id,question,options,institute_id,institute
+1,What is your preferred software development methodology?,"Agile,Waterfall,DevOps,Scrum",1,Institute A
+2,Which architectural style do you favor for building scalable applications?,"Microservices, Monolithic, Serverless, Event-driven",1,Institute A
+3,What is the most important factor when choosing a software architecture?,"Scalability, Maintainability, Performance, Security",1,Institute A
