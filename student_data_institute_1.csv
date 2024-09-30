@@ -1,0 +1,6 @@
+id,username,password,user_type,institute_id,institute
+1,student_11,studentpass1,student,1,Institute A
+1,student_12,studentpass2,student,1,Institute A
+1,student_13,studentpass3,student,1,Institute A
+1,student_14,studentpass4,student,1,Institute A
+1,student_15,studentpass5,student,1,Institute A
